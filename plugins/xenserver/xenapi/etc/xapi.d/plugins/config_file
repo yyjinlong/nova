@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+
+# NOTE: XenServer still only supports Python 2.4 in it's dom0 userspace
+# which means the Nova xenapi plugins must use only Python 2.4 features
+
+import XenAPIPlugin
+
+
+def get_val(session, args):
+    config_key = args['key']
+    config_file = open('/etc/xapi.conf')
+    try:
+        for line in config_file:
+            split = line.split('=')
+            if (len(split) == 2) and (split[0].strip() == config_key):
+                return split[1].strip()
+        return ""
+    finally:
+        config_file.close()
+
+if __name__ == '__main__':
+    XenAPIPlugin.dispatch({"get_val": get_val})
