@@ -58,4 +58,7 @@ developer focused documentation is available at:
 For information on how to contribute to Nova, please see the
 contents of the CONTRIBUTING.rst file.
 
+Add supervisor config file to manage nova-scheduler. location in the
+etc/nova/supervisor_nova-scheduler.conf
+
 -- End of broadcast
