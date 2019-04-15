@@ -61,4 +61,12 @@ contents of the CONTRIBUTING.rst file.
 Add supervisor config file to manage nova-scheduler. location in the
 etc/nova/supervisor_nova-scheduler.conf
 
+New features:
+
+    * nova-scheduler : 添加新的权重器, 基于负载和hash来计算, 以达到
+      虚拟机实例均匀散列到同一zone下的不同计算节点上.
+
+    * nova-compute   : 为libvirt添加网卡多队列功能, 每个虚拟机实例创建
+      成功后, 默认开启网卡多队列.
+
 -- End of broadcast

@@ -17,10 +17,12 @@ load_weight_opts = [
                     'numbers mean preference to choose light workload '
                     'compute hosts.'),
     cfg.IntOpt('instance_threshold',
-               default=4,
+               default=13,
                help='An threshold value used for hash calculate. Hash '
                     'result ensure the less instance count of compute '
-                    'node that fetch greater weight value.')
+                    'node that fetch greater weight value. Here，we '
+                    'assume that online compute node most assigned '
+                    '13 virtual machine instance.')
 ]
 
 CONF = cfg.CONF

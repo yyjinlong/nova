@@ -1138,6 +1138,7 @@ class LibvirtConfigGuestInterface(LibvirtConfigGuestDevice):
         self.vif_outbound_burst = None
         self.vif_outbound_average = None
         self.vlan = None
+        self.vcpus = None
 
     def format_dom(self):
         dev = super(LibvirtConfigGuestInterface, self).format_dom()
@@ -1148,6 +1149,10 @@ class LibvirtConfigGuestInterface(LibvirtConfigGuestDevice):
         dev.append(etree.Element("mac", address=self.mac_addr))
         if self.model:
             dev.append(etree.Element("model", type=self.model))
+
+        # NOTE(vif_multiqueue)
+        dev.append(
+            etree.Element("driver", name="vhost", queues=str(self.vcpus)))
 
         if self.driver_name:
             dev.append(etree.Element("driver", name=self.driver_name))

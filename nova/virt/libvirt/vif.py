@@ -102,6 +102,10 @@ class LibvirtGenericVIFDriver(object):
         model = None
         driver = None
 
+        # Aassign vcpus
+        flavor = instance.flavor
+        conf.vcpus = flavor.vcpus
+
         # If the user has specified a 'vif_model' against the
         # image then honour that model
         if image_meta:
