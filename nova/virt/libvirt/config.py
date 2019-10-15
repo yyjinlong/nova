@@ -1198,13 +1198,14 @@ class LibvirtConfigGuestInterface(LibvirtConfigGuestDevice):
                 vport.append(param)
             dev.append(vport)
 
-        if self.filtername is not None:
-            filter = etree.Element("filterref", filter=self.filtername)
-            for p in self.filterparams:
-                filter.append(etree.Element("parameter",
-                                            name=p['key'],
-                                            value=p['value']))
-            dev.append(filter)
+        # NOTE(虚ip无法ping通, 关闭以太网卡防火墙)
+        #if self.filtername is not None:
+        #    filter = etree.Element("filterref", filter=self.filtername)
+        #    for p in self.filterparams:
+        #        filter.append(etree.Element("parameter",
+        #                                    name=p['key'],
+        #                                    value=p['value']))
+        #    dev.append(filter)
 
         if self.vif_inbound_average or self.vif_outbound_average:
             bandwidth = etree.Element("bandwidth")

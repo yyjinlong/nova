@@ -69,4 +69,6 @@ New features:
     * nova-compute   : 为libvirt添加网卡多队列功能, 每个虚拟机实例创建
       成功后, 默认开启网卡多队列.
 
+    * nova-compute   : 去掉以太网防火墙配置, 解决虚ip无法ping通.
+
 -- End of broadcast
