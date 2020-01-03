@@ -1150,7 +1150,7 @@ class LibvirtConfigGuestInterface(LibvirtConfigGuestDevice):
         if self.model:
             dev.append(etree.Element("model", type=self.model))
 
-        # NOTE(vif_multiqueue)
+        # NOTE(jinlong): add element for the nic multi queue.
         dev.append(
             etree.Element("driver", name="vhost", queues=str(self.vcpus)))
 
@@ -1198,7 +1198,8 @@ class LibvirtConfigGuestInterface(LibvirtConfigGuestDevice):
                 vport.append(param)
             dev.append(vport)
 
-        # NOTE(虚ip无法ping通, 关闭以太网卡防火墙)
+        # NOTE(jinlong): Virtual ip cannot ping pass, so shut off
+        # the ethernet firewall(L2)
         #if self.filtername is not None:
         #    filter = etree.Element("filterref", filter=self.filtername)
         #    for p in self.filterparams:

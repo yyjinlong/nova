@@ -41,7 +41,7 @@ class LoadBalanceWeigher(weights.BaseHostWeigher):
     def _weigh_object(self, host_state, weight_properties):
         weigh = 0
 
-        # NOTE(根据已分配实例数量进行hash运算, 尽量保证均匀.)
+        # NOTE(jinlong): 根据已分配实例数量进行hash运算, 尽量保证均匀.
         hypervisor = host_state.nodename
         num_instances = host_state.num_instances
         LOG.info('** Load balance fetch hypervisor: %s instance count: %s'
@@ -50,7 +50,7 @@ class LoadBalanceWeigher(weights.BaseHostWeigher):
         hash_result = threshold - hash(num_instances) % threshold
         weigh += hash_result
 
-        # NOTE(负载越高, 对应的权重值越低.)
+        # NOTE(jinlong): 负载越高, 对应的权重值越低.
         io_ops = host_state.num_io_ops
         if io_ops > 0:
             weigh -= io_ops

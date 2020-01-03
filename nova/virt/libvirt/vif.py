@@ -102,7 +102,8 @@ class LibvirtGenericVIFDriver(object):
         model = None
         driver = None
 
-        # Aassign vcpus
+        # NOTE(jinlong): For add the nic multi queue, the multi queue number
+        # default equal vcpu number.
         flavor = instance.flavor
         conf.vcpus = flavor.vcpus
 
