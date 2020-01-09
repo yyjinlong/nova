@@ -1442,6 +1442,26 @@ class NetworkManager(manager.Manager):
         if not fixed_cidr:
             fixed_cidr = netaddr.IPNetwork(network['cidr'])
         num_ips = len(fixed_cidr)
+
+        LOG.info('** nova network-create reserved extra %s top: %s bottom: %s'
+                 % (extra_reserved, top_reserved, bottom_reserved))
+
+        # NOTE(jinlong): Now vlan divide rule is the smallest vlan segment
+        # is 64 ip. The rest all is a C segment of 254 IP.
+        #
+        # Convention: the smallest vlan segment reserve 5 ip as a virtual ip;
+        # A C segment valn reserve 10 ip as a virtual ip.
+        vip_count = 0
+        if num_ips > 32 and num_ips <= 64:
+            vip_count = 5
+        elif num_ips > 64:
+            vip_count = 10
+
+        vip_fo = num_ips - vip_count
+        vip_to = num_ips
+        vip_pos_list = range(vip_fo, vip_to)
+        LOG.info('** nova network-create cmd vip pos list: %s' % vip_pos_list)
+
         ips = []
         for index in range(num_ips):
             address = str(fixed_cidr[index])
@@ -1450,6 +1470,9 @@ class NetworkManager(manager.Manager):
                 reserved = True
             else:
                 reserved = False
+
+            if index in vip_pos_list:
+                reserved = True
 
             ips.append({'network_id': network_id,
                         'address': address,
@@ -1951,6 +1974,7 @@ class VlanManager(RPCAllocateFixedIP, floating_ips.FloatingIP, NetworkManager):
             vif = self._add_virtual_interface(context,
                 instance_id, network['id'])
 
+        LOG.info('** VlanManager.allocate_fixed_ip kwargs: %s' % kwargs)
         if kwargs.get('vpn', None):
             address = network['vpn_private_address']
             fip = objects.FixedIP.associate(context, str(address),
@@ -1963,9 +1987,11 @@ class VlanManager(RPCAllocateFixedIP, floating_ips.FloatingIP, NetworkManager):
                                                 instance_id,
                                                 network['id'])
             else:
+                LOG.info('** VlanManager.allocate_fixed_ip use pool.')
                 fip = objects.FixedIP.associate_pool(context,
                                                      network['id'],
                                                      instance_id)
+        LOG.info('** VlanManager.allocate_fixed_ip fip: %s' % fip)
         address = fip.address
 
         fip.allocated = True

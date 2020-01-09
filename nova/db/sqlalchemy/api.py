@@ -25,6 +25,7 @@ import sys
 import threading
 import time
 import uuid
+import subprocess
 
 from oslo_config import cfg
 from oslo_db import exception as db_exc
@@ -1181,19 +1182,34 @@ def fixed_ip_associate_pool(context, network_id, instance_uuid=None,
     if instance_uuid and not uuidutils.is_uuid_like(instance_uuid):
         raise exception.InvalidUUID(uuid=instance_uuid)
 
+    LOG.info('** fixed_ip_associate_pool network_id: %s instance_uuid: %s'
+             % (network_id, instance_uuid))
     session = get_session()
     with session.begin():
         network_or_none = or_(models.FixedIp.network_id == network_id,
                               models.FixedIp.network_id == null())
-        fixed_ip_ref = model_query(context, models.FixedIp, session=session,
+        fixed_ip_ref = None
+        fixed_ip_ref_list = model_query(context, models.FixedIp, session=session,
                                    read_deleted="no").\
                                filter(network_or_none).\
                                filter_by(reserved=False).\
                                filter_by(instance_uuid=None).\
                                filter_by(host=None).\
                                order_by(asc(models.FixedIp.updated_at)).\
-                               first()
+                               all()
+        for model in fixed_ip_ref_list:
+            # NOTE(jinlong): To avoid the current allocation IP
+            # and the use of virtual IP conflict
+            r = _ip_detection(model.address)
+            if r == 1:
+                fixed_ip_ref = model
+                break
+            else:
+                LOG.warn('** fixed_ip_associate_pool.ip: %s in use, so pass.'
+                         % model.address)
 
+        LOG.info('** fixed_ip_associate_pool.fixed_ip_ref: %s fixed ip: %s'
+                 % (model, model.address))
         if not fixed_ip_ref:
             raise exception.NoMoreFixedIps(net=network_id)
 
@@ -1221,6 +1237,14 @@ def fixed_ip_associate_pool(context, network_id, instance_uuid=None,
             raise exception.FixedIpAssociateFailed(net=network_id)
 
     return fixed_ip_ref
+
+
+def _ip_detection(ip):
+    cmd = ['ping', '-c', '1', '-W', '1', ip]
+    r = subprocess.Popen(cmd,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    return r.wait()
 
 
 @require_context

@@ -71,4 +71,11 @@ New features:
 
     * nova-compute   : 去掉以太网防火墙配置, 解决虚ip无法ping通.
 
+    * nova-conductor : 分配ip时探测当前ip是否再用, 如果再用则直接pass掉,
+      去拿下一个, 以此类推.
+
+    * nova-network   : 创建一个vlan网络时进行虚ip段预留. 同时约定:
+      最小vlan段预留5个作为虚ip; 一个C的预留10个作为虚ip.
+
+
 -- End of broadcast
