@@ -111,7 +111,7 @@ class _TestInstanceObject(object):
         self.mox.StubOutWithMock(db, 'instance_get_by_uuid')
         db.instance_get_by_uuid(self.context, 'uuid',
                                 columns_to_join=[],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(self.fake_instance)
         self.mox.ReplayAll()
         inst = instance.Instance.get_by_uuid(self.context, 'uuid',
@@ -154,7 +154,7 @@ class _TestInstanceObject(object):
         db.instance_get_by_uuid(
             self.context, 'uuid',
             columns_to_join=exp_cols,
-            use_slave=False
+            use_subordinate=False
             ).AndReturn(fake_instance)
         fake_faults = test_instance_fault.fake_faults
         db.instance_fault_get_by_instance_uuids(
@@ -191,13 +191,13 @@ class _TestInstanceObject(object):
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['info_cache',
                                                  'security_groups'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(self.fake_instance)
         fake_inst2 = dict(self.fake_instance,
                           metadata=[{'key': 'foo', 'value': 'bar'}])
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['metadata'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(fake_inst2)
         self.mox.ReplayAll()
         inst = instance.Instance.get_by_uuid(self.context, fake_uuid)
@@ -222,7 +222,7 @@ class _TestInstanceObject(object):
         db.instance_get_by_uuid(self.context, 'fake-uuid',
                                 columns_to_join=['info_cache',
                                                  'security_groups'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(fake_instance)
         self.mox.ReplayAll()
         inst = instance.Instance.get_by_uuid(self.context, 'fake-uuid')
@@ -240,13 +240,13 @@ class _TestInstanceObject(object):
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['info_cache',
                                                  'security_groups'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(dict(self.fake_instance,
                                                  host='orig-host'))
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['info_cache',
                                                  'security_groups'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(dict(self.fake_instance,
                                                  host='new-host'))
         self.mox.StubOutWithMock(instance_info_cache.InstanceInfoCache,
@@ -268,7 +268,7 @@ class _TestInstanceObject(object):
         self.mox.StubOutWithMock(instance.Instance, 'get_by_uuid')
         instance.Instance.get_by_uuid(self.context, uuid=inst.uuid,
                                       expected_attrs=['metadata'],
-                                      use_slave=False
+                                      use_subordinate=False
                                       ).AndReturn(inst_copy)
         self.mox.ReplayAll()
         self.assertRaises(exception.OrphanedObjectError, inst.refresh)
@@ -315,7 +315,7 @@ class _TestInstanceObject(object):
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['info_cache',
                                                  'security_groups'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(old_ref)
         db.instance_update_and_get_original(
                 self.context, fake_uuid, expected_updates,
@@ -402,7 +402,7 @@ class _TestInstanceObject(object):
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['info_cache',
                                                  'security_groups'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(old_ref)
         db.instance_update_and_get_original(
                 self.context, fake_uuid, expected_updates, update_cells=False,
@@ -415,7 +415,7 @@ class _TestInstanceObject(object):
         self.mox.ReplayAll()
 
         inst = instance.Instance.get_by_uuid(self.context, old_ref['uuid'],
-                                             use_slave=False)
+                                             use_subordinate=False)
         self.assertEqual('hello', inst.display_name)
         inst.display_name = 'goodbye'
         inst.save()
@@ -510,7 +510,7 @@ class _TestInstanceObject(object):
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['info_cache',
                                                  'security_groups'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(fake_inst)
         self.mox.ReplayAll()
         inst = instance.Instance.get_by_uuid(self.context, fake_uuid)
@@ -524,7 +524,7 @@ class _TestInstanceObject(object):
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['info_cache',
                                                  'security_groups'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(fake_inst)
         self.mox.ReplayAll()
         inst = instance.Instance.get_by_uuid(self.context, fake_uuid)
@@ -538,7 +538,7 @@ class _TestInstanceObject(object):
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['info_cache',
                                                  'security_groups'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(fake_inst)
         self.mox.ReplayAll()
         inst = instance.Instance.get_by_uuid(self.context, fake_uuid)
@@ -562,7 +562,7 @@ class _TestInstanceObject(object):
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['info_cache',
                                                  'security_groups'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(fake_inst)
         db.instance_info_cache_update(self.context, fake_uuid,
                                       {'network_info': nwinfo2_json})
@@ -579,7 +579,7 @@ class _TestInstanceObject(object):
         self.mox.StubOutWithMock(db, 'instance_get_by_uuid')
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['info_cache'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(fake_inst)
         self.mox.ReplayAll()
         inst = instance.Instance.get_by_uuid(self.context, fake_uuid,
@@ -605,7 +605,7 @@ class _TestInstanceObject(object):
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['info_cache',
                                                  'security_groups'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(fake_inst)
         db.security_group_update(self.context, 1, {'description': 'changed'}
                                  ).AndReturn(fake_inst['security_groups'][0])
@@ -630,7 +630,7 @@ class _TestInstanceObject(object):
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['info_cache',
                                                  'security_groups'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(fake_inst)
         self.mox.ReplayAll()
         inst = instance.Instance.get_by_uuid(self.context, fake_uuid)
@@ -642,7 +642,7 @@ class _TestInstanceObject(object):
         self.mox.StubOutWithMock(db, 'instance_get_by_uuid')
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['pci_devices'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(fake_inst)
         self.mox.ReplayAll()
         inst = instance.Instance.get_by_uuid(self.context, fake_uuid,
@@ -692,7 +692,7 @@ class _TestInstanceObject(object):
         self.mox.StubOutWithMock(db, 'instance_get_by_uuid')
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=['pci_devices'],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(fake_inst)
         self.mox.ReplayAll()
         inst = instance.Instance.get_by_uuid(self.context, fake_uuid,
@@ -710,7 +710,7 @@ class _TestInstanceObject(object):
         self.mox.StubOutWithMock(db, 'instance_fault_get_by_instance_uuids')
         db.instance_get_by_uuid(self.context, fake_uuid,
                                 columns_to_join=[],
-                                use_slave=False
+                                use_subordinate=False
                                 ).AndReturn(self.fake_instance)
         db.instance_fault_get_by_instance_uuids(
             self.context, [fake_uuid]).AndReturn({fake_uuid: fake_faults})
@@ -1279,11 +1279,11 @@ class _TestInstanceListObject(object):
         db.instance_get_all_by_filters(self.context, {'foo': 'bar'}, 'uuid',
                                        'asc', limit=None, marker=None,
                                        columns_to_join=['metadata'],
-                                       use_slave=False).AndReturn(fakes)
+                                       use_subordinate=False).AndReturn(fakes)
         self.mox.ReplayAll()
         inst_list = instance.InstanceList.get_by_filters(
             self.context, {'foo': 'bar'}, 'uuid', 'asc',
-            expected_attrs=['metadata'], use_slave=False)
+            expected_attrs=['metadata'], use_subordinate=False)
 
         for i in range(0, len(fakes)):
             self.assertIsInstance(inst_list.objects[i], instance.Instance)
@@ -1296,13 +1296,13 @@ class _TestInstanceListObject(object):
         db.instance_get_all_by_filters_sort(self.context, {'foo': 'bar'},
                                             limit=None, marker=None,
                                             columns_to_join=['metadata'],
-                                            use_slave=False,
+                                            use_subordinate=False,
                                             sort_keys=['uuid'],
                                             sort_dirs=['asc']).AndReturn(fakes)
         self.mox.ReplayAll()
         inst_list = instance.InstanceList.get_by_filters(
             self.context, {'foo': 'bar'}, expected_attrs=['metadata'],
-            use_slave=False, sort_keys=['uuid'], sort_dirs=['asc'])
+            use_subordinate=False, sort_keys=['uuid'], sort_dirs=['asc'])
 
         for i in range(0, len(fakes)):
             self.assertIsInstance(inst_list.objects[i], instance.Instance)
@@ -1318,10 +1318,10 @@ class _TestInstanceListObject(object):
         # Single sort key/direction is set, call non-sorted DB function
         instance.InstanceList.get_by_filters(
             self.context, {'foo': 'bar'}, sort_key='key', sort_dir='dir',
-            limit=100, marker='uuid', use_slave=True)
+            limit=100, marker='uuid', use_subordinate=True)
         mock_get_by_filters.assert_called_once_with(
             self.context, {'foo': 'bar'}, 'key', 'dir', limit=100,
-            marker='uuid', columns_to_join=None, use_slave=True)
+            marker='uuid', columns_to_join=None, use_subordinate=True)
         self.assertEqual(0, mock_get_by_filters_sort.call_count)
 
     @mock.patch.object(db, 'instance_get_all_by_filters_sort')
@@ -1333,11 +1333,11 @@ class _TestInstanceListObject(object):
         # Multiple sort keys/directions are set, call sorted DB function
         instance.InstanceList.get_by_filters(
             self.context, {'foo': 'bar'}, limit=100, marker='uuid',
-            use_slave=True, sort_keys=['key1', 'key2'],
+            use_subordinate=True, sort_keys=['key1', 'key2'],
             sort_dirs=['dir1', 'dir2'])
         mock_get_by_filters_sort.assert_called_once_with(
             self.context, {'foo': 'bar'}, limit=100,
-            marker='uuid', columns_to_join=None, use_slave=True,
+            marker='uuid', columns_to_join=None, use_subordinate=True,
             sort_keys=['key1', 'key2'], sort_dirs=['dir1', 'dir2'])
         self.assertEqual(0, mock_get_by_filters.call_count)
 
@@ -1351,12 +1351,12 @@ class _TestInstanceListObject(object):
                                        {'deleted': True, 'cleaned': False},
                                        'uuid', 'asc', limit=None, marker=None,
                                        columns_to_join=['metadata'],
-                                       use_slave=False).AndReturn(
+                                       use_subordinate=False).AndReturn(
                                            [fakes[1]])
         self.mox.ReplayAll()
         inst_list = instance.InstanceList.get_by_filters(
             self.context, {'deleted': True, 'cleaned': False}, 'uuid', 'asc',
-            expected_attrs=['metadata'], use_slave=False)
+            expected_attrs=['metadata'], use_subordinate=False)
 
         self.assertEqual(1, len(inst_list))
         self.assertIsInstance(inst_list.objects[0], instance.Instance)
@@ -1369,7 +1369,7 @@ class _TestInstanceListObject(object):
         self.mox.StubOutWithMock(db, 'instance_get_all_by_host')
         db.instance_get_all_by_host(self.context, 'foo',
                                     columns_to_join=None,
-                                    use_slave=False).AndReturn(fakes)
+                                    use_subordinate=False).AndReturn(fakes)
         self.mox.ReplayAll()
         inst_list = instance.InstanceList.get_by_host(self.context, 'foo')
         for i in range(0, len(fakes)):
@@ -1475,7 +1475,7 @@ class _TestInstanceListObject(object):
         self.mox.StubOutWithMock(db, 'instance_fault_get_by_instance_uuids')
         db.instance_get_all_by_host(self.context, 'host',
                                     columns_to_join=[],
-                                    use_slave=False
+                                    use_subordinate=False
                                     ).AndReturn(fake_insts)
         db.instance_fault_get_by_instance_uuids(
             self.context, [x['uuid'] for x in fake_insts]
@@ -1483,7 +1483,7 @@ class _TestInstanceListObject(object):
         self.mox.ReplayAll()
         instances = instance.InstanceList.get_by_host(self.context, 'host',
                                                       expected_attrs=['fault'],
-                                                      use_slave=False)
+                                                      use_subordinate=False)
         self.assertEqual(2, len(instances))
         self.assertEqual(fake_faults['fake-uuid'][0],
                          dict(instances[0].fault.iteritems()))
