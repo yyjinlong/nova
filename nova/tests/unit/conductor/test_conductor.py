@@ -369,23 +369,23 @@ class ConductorTestCase(_BaseTestCase, test.TestCase):
         self.mox.StubOutWithMock(db, 'instance_get_all_by_filters')
         db.instance_get_all_by_filters(self.context, filters,
                                        'fake-key', 'fake-sort',
-                                       columns_to_join=None, use_slave=False)
+                                       columns_to_join=None, use_subordinate=False)
         self.mox.ReplayAll()
         self.conductor.instance_get_all_by_filters(self.context, filters,
                                                    'fake-key', 'fake-sort',
                                                    None, False)
 
-    def test_instance_get_all_by_filters_use_slave(self):
+    def test_instance_get_all_by_filters_use_subordinate(self):
         filters = {'foo': 'bar'}
         self.mox.StubOutWithMock(db, 'instance_get_all_by_filters')
         db.instance_get_all_by_filters(self.context, filters,
                                        'fake-key', 'fake-sort',
-                                       columns_to_join=None, use_slave=True)
+                                       columns_to_join=None, use_subordinate=True)
         self.mox.ReplayAll()
         self.conductor.instance_get_all_by_filters(self.context, filters,
                                                    'fake-key', 'fake-sort',
                                                    columns_to_join=None,
-                                                   use_slave=True)
+                                                   use_subordinate=True)
 
     def test_instance_get_all_by_host(self):
         self.mox.StubOutWithMock(db, 'instance_get_all_by_host')
@@ -1299,7 +1299,7 @@ class _BaseTaskTestCase(object):
                         [{'host': 'host1', 'nodename': 'node1', 'limits': []},
                          {'host': 'host2', 'nodename': 'node2', 'limits': []}])
         db.block_device_mapping_get_all_by_instance(self.context,
-                instances[0].uuid, use_slave=False).AndReturn([])
+                instances[0].uuid, use_subordinate=False).AndReturn([])
         self.conductor_manager.compute_rpcapi.build_and_run_instance(
                 self.context,
                 instance=mox.IgnoreArg(),
@@ -1320,7 +1320,7 @@ class _BaseTaskTestCase(object):
                 block_device_mapping=mox.IgnoreArg(),
                 node='node1', limits=[])
         db.block_device_mapping_get_all_by_instance(self.context,
-                instances[1].uuid, use_slave=False).AndReturn([])
+                instances[1].uuid, use_subordinate=False).AndReturn([])
         self.conductor_manager.compute_rpcapi.build_and_run_instance(
                 self.context,
                 instance=mox.IgnoreArg(),
