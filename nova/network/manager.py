@@ -2143,8 +2143,11 @@ class VlanManager(RPCAllocateFixedIP, floating_ips.FloatingIP, NetworkManager):
             self.l3driver.add_vpn(CONF.vpn_ip,
                     network.vpn_public_port,
                     network.vpn_private_address)
+        LOG.info('** conf.fake_network: %s' % CONF.fake_network)
         if not CONF.fake_network:
             dev = self.driver.get_dev(network)
+            LOG.info('** get dev: %s from network: %s', dev, network)
+            LOG.info('** get network.enable_dhcp: %s', network.enable_dhcp)
             # NOTE(dprince): dhcp DB queries require elevated context
             if network.enable_dhcp:
                 elevated = context.elevated()
@@ -2171,7 +2174,7 @@ class VlanManager(RPCAllocateFixedIP, floating_ips.FloatingIP, NetworkManager):
                                                    self.host)):
                 LOG.debug("Remove unused gateway %s", network['bridge'])
                 if network.enable_dhcp:
-                    self.driver.kill_dhcp(dev)
+                    self.driver.kill_dhcp(dev, network)
                 self.l3driver.remove_gateway(network)
                 if not self._uses_shared_ip(network):
                     fip = objects.FixedIP.get_by_address(context,

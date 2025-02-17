@@ -1039,19 +1039,24 @@ def release_dhcp(dev, address, mac_address):
 
 
 def update_dhcp(context, dev, network_ref):
-    conffile = _dhcp_file(dev, 'conf')
+    uuid = network_ref['uuid']
+    LOG.info('** update dhcp get network uuid: %s', uuid)
+    conffile = _dhcp_file(uuid, dev, 'conf')
     host = None
     if network_ref['multi_host']:
         host = CONF.host
     fixedips = objects.FixedIPList.get_by_network(context,
                                                   network_ref,
                                                   host=host)
+    LOG.info('** dev: %s get fixedips: %s', dev, fixedips)
     write_to_file(conffile, get_dhcp_hosts(context, network_ref, fixedips))
     restart_dhcp(context, dev, network_ref, fixedips)
 
 
 def update_dns(context, dev, network_ref):
-    hostsfile = _dhcp_file(dev, 'hosts')
+    uuid = network_ref['uuid']
+    LOG.info('** update dns network uuid: %s', uuid)
+    hostsfile = _dhcp_file(uuid, dev, 'hosts')
     host = None
     if network_ref['multi_host']:
         host = CONF.host
@@ -1062,16 +1067,18 @@ def update_dns(context, dev, network_ref):
     restart_dhcp(context, dev, network_ref, fixedips)
 
 
-def update_dhcp_hostfile_with_text(dev, hosts_text):
-    conffile = _dhcp_file(dev, 'conf')
+def update_dhcp_hostfile_with_text(uuid, dev, hosts_text):
+    conffile = _dhcp_file(uuid, dev, 'conf')
     write_to_file(conffile, hosts_text)
 
 
-def kill_dhcp(dev):
-    pid = _dnsmasq_pid_for(dev)
+def kill_dhcp(dev, network_ref):
+    uuid = network_ref['uuid']
+    LOG.info('** kill dhcp network uuid: %s', uuid)
+    pid = _dnsmasq_pid_for(uuid, dev)
     if pid:
         # Check that the process exists and looks like a dnsmasq process
-        conffile = _dhcp_file(dev, 'conf')
+        conffile = _dhcp_file(uuid, dev, 'conf')
         if is_pid_cmdline_correct(pid, conffile.split('/')[-1]):
             _execute('kill', '-9', pid, run_as_root=True)
         else:
@@ -1091,9 +1098,12 @@ def restart_dhcp(context, dev, network_ref, fixedips):
     signal causing it to reload, otherwise spawn a new instance.
 
     """
-    conffile = _dhcp_file(dev, 'conf')
+    LOG.info('** restart_dhcp dev: %s network_ref: %s', dev, network_ref)
+    uuid = network_ref['uuid']
+    LOG.info('** network uuid: %s', uuid)
+    conffile = _dhcp_file(uuid, dev, 'conf')
 
-    optsfile = _dhcp_file(dev, 'opts')
+    optsfile = _dhcp_file(uuid, dev, 'opts')
     write_to_file(optsfile, get_dhcp_opts(context, network_ref, fixedips))
     os.chmod(optsfile, 0o644)
 
@@ -1102,7 +1112,7 @@ def restart_dhcp(context, dev, network_ref, fixedips):
     # Make sure dnsmasq can actually read it (it setuid()s to "nobody")
     os.chmod(conffile, 0o644)
 
-    pid = _dnsmasq_pid_for(dev)
+    pid = _dnsmasq_pid_for(uuid, dev)
 
     # if dnsmasq is already running, then tell it to reload
     if pid:
@@ -1123,8 +1133,8 @@ def restart_dhcp(context, dev, network_ref, fixedips):
            '--strict-order',
            '--bind-interfaces',
            '--conf-file=%s' % CONF.dnsmasq_config_file,
-           '--pid-file=%s' % _dhcp_file(dev, 'pid'),
-           '--dhcp-optsfile=%s' % _dhcp_file(dev, 'opts'),
+           '--pid-file=%s' % _dhcp_file(uuid, dev, 'pid'),
+           '--dhcp-optsfile=%s' % _dhcp_file(uuid, dev, 'opts'),
            '--listen-address=%s' % network_ref['dhcp_server'],
            '--except-interface=lo',
            '--dhcp-range=set:%s,%s,static,%s,%ss' %
@@ -1133,7 +1143,7 @@ def restart_dhcp(context, dev, network_ref, fixedips):
                           network_ref['netmask'],
                           CONF.dhcp_lease_time),
            '--dhcp-lease-max=%s' % len(netaddr.IPNetwork(network_ref['cidr'])),
-           '--dhcp-hostsfile=%s' % _dhcp_file(dev, 'conf'),
+           '--dhcp-hostsfile=%s' % _dhcp_file(uuid, dev, 'conf'),
            '--dhcp-script=%s' % CONF.dhcpbridge,
            '--no-hosts',
            '--leasefile-ro']
@@ -1150,7 +1160,7 @@ def restart_dhcp(context, dev, network_ref, fixedips):
         if network_ref.get('dns2'):
             dns_servers.append(network_ref.get('dns2'))
     if network_ref['multi_host']:
-        cmd.append('--addn-hosts=%s' % _dhcp_file(dev, 'hosts'))
+        cmd.append('--addn-hosts=%s' % _dhcp_file(uuid, dev, 'hosts'))
     if dns_servers:
         cmd.append('--no-resolv')
     for dns_server in dns_servers:
@@ -1271,12 +1281,14 @@ def device_exists(device):
     return os.path.exists('/sys/class/net/%s' % device)
 
 
-def _dhcp_file(dev, kind):
+def _dhcp_file(uuid, dev, kind):
     """Return path to a pid, leases, hosts or conf file for a bridge/device."""
+    # NOTE(jinlong): add uuid
     fileutils.ensure_tree(CONF.networks_path)
-    return os.path.abspath('%s/nova-%s.%s' % (CONF.networks_path,
-                                              dev,
-                                              kind))
+    return os.path.abspath('%s/nova-%s-%s.%s' % (CONF.networks_path,
+                                                 uuid,
+                                                 dev,
+                                                 kind))
 
 
 def _ra_file(dev, kind):
@@ -1287,7 +1299,7 @@ def _ra_file(dev, kind):
                                               kind))
 
 
-def _dnsmasq_pid_for(dev):
+def _dnsmasq_pid_for(uuid, dev):
     """Returns the pid for prior dnsmasq instance for a bridge/device.
 
     Returns None if no pid file exists.
@@ -1295,7 +1307,9 @@ def _dnsmasq_pid_for(dev):
     If machine has rebooted pid might be incorrect (caller should check).
 
     """
-    pid_file = _dhcp_file(dev, 'pid')
+    # NOTE(jinlong): add uuid
+    pid_file = _dhcp_file(uuid, dev, 'pid')
+    LOG.info('** dhcp file: %s', pid_file)
 
     if os.path.exists(pid_file):
         try:
