@@ -78,6 +78,7 @@ New features:
        - 最小 VLAN 段预留 5 个作为虚 IP。
        - 一个 C 段预留 10 个作为虚 IP。
      - 支持同一 VLAN 多网段功能。
+     - ip a show br401 可以看到: 同一vlan、不同网段的dhcp ip 已经挂载到了网桥上.
 
 
 -- End of broadcast
