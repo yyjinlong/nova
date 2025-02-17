@@ -1897,6 +1897,7 @@ class NeutronLinuxBridgeInterfaceDriver(LinuxNetInterfaceDriver):
     def plug(self, network, mac_address, gateway=True):
         dev = self.get_dev(network)
         bridge = self.get_bridge(network)
+        LOG.info('** get bridge: %s', bridge)
         if not gateway:
             # If we weren't instructed to act as a gateway then add the
             # appropriate flows to block all non-dhcp traffic.
@@ -1913,6 +1914,7 @@ class NeutronLinuxBridgeInterfaceDriver(LinuxNetInterfaceDriver):
                 iptables_manager.ipv4['filter'].add_rule(*rule)
 
         create_tap_dev(dev, mac_address)
+        LOG.info('** create tap dev: %s mac_address: %s', dev, mac_address)
 
         if not device_exists(bridge):
             LOG.debug("Starting bridge %s ", bridge)
@@ -1925,8 +1927,10 @@ class NeutronLinuxBridgeInterfaceDriver(LinuxNetInterfaceDriver):
                           check_exit_code=[0, 2, 254])
             LOG.debug("Done starting bridge %s", bridge)
 
+            # NOTE(jinlong): same vlan id, multi cidr
             full_ip = '%s/%s' % (network['dhcp_server'],
                                  network['cidr'].rpartition('/')[2])
+            LOG.info("** bridge bind dhcp ip command: ip address add %s dev %s", full_ip, bridge)
             utils.execute('ip', 'address', 'add', full_ip, 'dev', bridge,
                           run_as_root=True, check_exit_code=[0, 2, 254])
 
