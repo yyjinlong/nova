@@ -63,21 +63,21 @@ etc/nova/supervisor_nova-scheduler.conf
 
 New features:
 
-    * nova-scheduler
-      ** 添加新的权重器, 基于负载和hash来计算, 以达到虚拟机实例均匀散列到同一zone下的不同计算节点上.
-
-    * nova-compute
-      ** 为libvirt添加网卡多队列功能, 每个虚拟机实例创建成功后, 默认开启网卡多队列.
-
-    * nova-compute
-      ** 去掉以太网防火墙配置, 解决虚ip无法ping通.
-
-    * nova-conductor
-      ** 分配ip时探测当前ip是否再用, 如果再用则直接pass掉, 去拿下一个, 以此类推.
-
-    * nova-network
-      ** 创建一个vlan网络时进行虚ip段预留. 同时约定: 最小vlan段预留5个作为虚ip; 一个C的预留10个作为虚ip.
-      ** 支持同一vlan多网段功能.
+    **nova-scheduler**
+     - 添加新的权重器，基于负载和 hash 来计算，以达到虚拟机实例均匀散列到同一 zone 下的不同计算节点上。
+   
+    **nova-compute**
+     - 为 libvirt 添加网卡多队列功能，每个虚拟机实例创建成功后，默认开启网卡多队列。
+     - 去掉以太网防火墙配置，解决虚 IP 无法 ping 通。
+   
+    **nova-conductor**
+     - 分配 IP 时探测当前 IP 是否在用，如果在用则直接跳过，去拿下一个，以此类推。
+   
+    **nova-network**
+     - 创建 VLAN 网络时进行虚 IP 段预留。同时约定：
+       - 最小 VLAN 段预留 5 个作为虚 IP。
+       - 一个 C 段预留 10 个作为虚 IP。
+     - 支持同一 VLAN 多网段功能。
 
 
 -- End of broadcast
