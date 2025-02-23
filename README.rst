@@ -80,13 +80,22 @@ New features:
      - 支持同一 VLAN 多网段功能。
      - ip a show br401 可以看到: 同一vlan、不同网段的dhcp ip 已经挂载到了网桥上.
 
-Rocky linux:
+Rocky Linux
+===========
 
-    ** 安装brctl **
+安装 `brctl`
+------------
+
+.. code-block:: bash
+
     wget https://vault.centos.org/7.9.2009/os/x86_64/Packages/bridge-utils-1.5-9.el7.x86_64.rpm
     rpm -ivh bridge-utils-1.5-9.el7.x86_64.rpm
 
-    ** rocky运行nova-network **
+Rocky 运行 nova-network
+------------------------
+
+.. code-block:: bash
+
     dnf install -y python2.x86_64
     pip2 install virtualenv
     virtualenv .venv
@@ -96,6 +105,11 @@ Rocky linux:
 
     tools/with_venv.sh nova-network --log-dir=/var/log/nova --log-file=nova-network.log --config-file=/etc/nova/nova.conf -v -d
 
-    ** 容器运行nova-compute **
+容器运行 nova-compute
+---------------------
+
+.. code-block:: bash
+
+    # 这里添加你的 nova-compute 启动命令
 
 -- End of broadcast
