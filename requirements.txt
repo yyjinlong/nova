@@ -51,7 +51,7 @@ alembic<0.8.1,>=0.7.2
 amqp==1.4.6
 anyjson==0.3.3
 backports.ssl_match_hostname==3.5.0.1
-Beaker==1.5.4
+Beaker==1.12.0
 chardet==2.2.1
 cmd2==0.6.8
 configobj==4.7.2
