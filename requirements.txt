@@ -9,7 +9,7 @@ decorator==3.4.0
 eventlet==0.17.4
 Jinja2==2.7.2
 keystonemiddleware==1.5.1
-lxml==3.2.1
+lxml>=2.3
 Routes==1.13
 WebOb==1.4.1
 greenlet==0.4.9
