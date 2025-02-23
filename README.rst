@@ -82,15 +82,20 @@ New features:
 
 Rocky linux:
 
-```
-dnf install -y python2.x86_64
-pip2 install virtualenv
-virtualenv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python setup.py develop
+    ** 安装brctl **
+    wget https://vault.centos.org/7.9.2009/os/x86_64/Packages/bridge-utils-1.5-9.el7.x86_64.rpm
+    rpm -ivh bridge-utils-1.5-9.el7.x86_64.rpm
 
-tools/with_venv.sh nova-network --log-dir=/var/log/nova --log-file=nova-network.log --config-file=/etc/nova/nova.conf -v -d
-```
+    ** rocky运行nova-network **
+    dnf install -y python2.x86_64
+    pip2 install virtualenv
+    virtualenv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    python setup.py develop
+
+    tools/with_venv.sh nova-network --log-dir=/var/log/nova --log-file=nova-network.log --config-file=/etc/nova/nova.conf -v -d
+
+    ** 容器运行nova-compute **
 
 -- End of broadcast
