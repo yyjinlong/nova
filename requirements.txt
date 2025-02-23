@@ -86,7 +86,7 @@ pyusb==1.0.0b1
 pywbem==0.7.0
 qrcode==5.0.1
 repoze.lru==0.4
-requests==2.6.0
+requests==2.32.2
 retrying==1.2.3
 rsa==3.3
 posix_ipc==0.9.8
