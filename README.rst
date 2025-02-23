@@ -80,5 +80,17 @@ New features:
      - 支持同一 VLAN 多网段功能。
      - ip a show br401 可以看到: 同一vlan、不同网段的dhcp ip 已经挂载到了网桥上.
 
+Rocky linux:
+
+```
+dnf install -y python2.x86_64
+pip2 install virtualenv
+virtualenv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python setup.py develop
+
+tools/with_venv.sh nova-network --log-dir=/var/log/nova --log-file=nova-network.log --config-file=/etc/nova/nova.conf -v -d
+```
 
 -- End of broadcast
