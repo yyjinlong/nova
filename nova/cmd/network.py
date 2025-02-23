@@ -60,7 +60,7 @@ def main():
     utils.monkey_patch()
     objects.register_all()
 
-    print '** nova-network version: ', version
+    print '** nova-network version: ', version.version_string()
     gmr.TextGuruMeditation.setup_autorun(version)
 
     if not CONF.conductor.use_local:
