@@ -20,23 +20,23 @@ capabilities.
 New Features
 ============
 
-**nova-scheduler**
+nova-scheduler
 ------------------
 
 - 添加新的权重器，基于负载和 hash 来计算，以达到虚拟机实例均匀散列到同一 zone 下的不同计算节点上。
 
-**nova-compute**
+nova-compute
 ----------------
 
 - 为 libvirt 添加网卡多队列功能，每个虚拟机实例创建成功后，默认开启网卡多队列。
 - 去掉以太网防火墙配置，解决虚 IP 无法 ping 通。
 
-**nova-conductor**
+nova-conductor
 ------------------
 
 - 分配 IP 时探测当前 IP 是否在用，如果在用则直接跳过，去拿下一个，以此类推。
 
-**nova-network**
+nova-network
 ----------------
 
 - 创建 VLAN 网络时进行虚 IP 段预留。同时约定：
@@ -76,7 +76,80 @@ Rocky 运行 nova-network
 容器运行 nova-compute
 ---------------------
 
+### 构建镜像
+
 .. code-block:: bash
 
-    # 这里添加你的 nova-compute 启动命令
+    cd /opt/ && mkdir nova && cd nova/
+    git clone https://github.com/yolooks/kilo.git
 
+    vim Dockerfile
+    FROM centos:centos7.9.2009
+
+    ARG timezone=Asia/Shanghai
+    
+    ENV LIBGUESTFS_ATTACH_METHOD=appliance
+    
+    COPY ./kilo/source /opt/source
+    
+    RUN cp -f /usr/share/zoneinfo/${timezone} /etc/localtime && \
+        cd /opt/source && \
+        chmod +x install.sh && \
+        ./install.sh
+    
+    USER nova
+    
+    CMD ["/usr/bin/nova-compute"]
+
+    docker build --network=host -t nova:1.0.0 .
+
+### 启动容器
+
+.. code-block:: bash
+
+    # 启动容器
+    docker run -d --name nova-compute -v /data0:/data0 -v /etc/nova:/etc/nova -v /var/lib/nova:/var/lib/nova -v /var/run/libvirt:/var/run/libvirt -v /sys/fs/cgroup:/sys/fs/cgroup --cgroupns host --network host --pid host --uts host --ipc host --userns host --privileged nova:1.0.0
+
+    # 进入容器
+    docker exec -it nova-compute bash
+
+### systemd管理
+
+.. code-block:: bash
+
+    # systemd管理
+    vim /lib/systemd/system/openstack-nova-compute.service
+    [Unit]
+    Description=OpenStack Nova Compute Container
+    After=network.target libvirtd.service docker.service
+    Requires=docker.service
+    
+    [Service]
+    User=nova
+    Restart=always
+    ExecStartPre=-/usr/bin/docker stop nova-compute
+    ExecStartPre=-/usr/bin/docker rm -f nova-compute
+    ExecStart=/usr/bin/docker run --name nova-compute \
+        -v /data0:/data0 \
+        -v /etc/nova:/etc/nova \
+        -v /var/lib/nova:/var/lib/nova \
+        -v /var/run/libvirt:/var/run/libvirt \
+        -v /sys/fs/cgroup:/sys/fs/cgroup \
+        --cgroupns host \
+        --network host \
+        --pid host \
+        --uts host \
+        --ipc host \
+        --userns host \
+        --privileged \
+        nova:1.0.0
+    ExecStop=/usr/bin/docker stop nova-compute
+    ExecStopPost=/usr/bin/docker rm -f nova-compute
+    
+    [Install]
+    WantedBy=multi-user.target
+
+    # 启动
+    systemctl daemon-reload
+    systemctl start openstack-nova-compute
+    systemctl enable openstack-nova-compute
