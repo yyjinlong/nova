@@ -142,7 +142,6 @@ ExecStart=/usr/bin/docker run --name nova-compute \
     --privileged \
     nova:1.0.0
 ExecStop=/usr/bin/docker stop nova-compute
-ExecStopPost=/usr/bin/docker rm -f nova-compute
 
 [Install]
 WantedBy=multi-user.target
