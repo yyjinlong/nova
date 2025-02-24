@@ -76,7 +76,8 @@ Rocky 运行 nova-network
 容器运行 nova-compute
 ---------------------
 
-### 构建镜像
+构建镜像
+--------
 
 .. code-block:: bash
 
@@ -103,17 +104,22 @@ Rocky 运行 nova-network
 
     docker build --network=host -t nova:1.0.0 .
 
-### 启动容器
+启动容器
+--------
 
 .. code-block:: bash
 
     # 启动容器
     docker run -d --name nova-compute -v /data0:/data0 -v /etc/nova:/etc/nova -v /var/lib/nova:/var/lib/nova -v /var/run/libvirt:/var/run/libvirt -v /sys/fs/cgroup:/sys/fs/cgroup --cgroupns host --network host --pid host --uts host --ipc host --userns host --privileged nova:1.0.0
 
+    # 查看容器
+    docker ps -a
+
     # 进入容器
     docker exec -it nova-compute bash
 
-### systemd管理
+systemd管理
+-----------
 
 .. code-block:: bash
 
