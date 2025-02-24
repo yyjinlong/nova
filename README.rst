@@ -118,6 +118,18 @@ Rocky 运行 nova-network
     # 进入容器
     docker exec -it nova-compute bash
 
+创建nova用户
+-----------
+
+.. code-block:: bash
+
+    useradd -M -u 162 nova
+    groupmod -g 162 nova
+    usermod -aG libvirt nova
+    usermod -aG docker nova
+    usermod -aG nobody nova
+    usermod -aG qemu nova
+
 systemd管理
 -----------
 
