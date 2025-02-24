@@ -81,9 +81,11 @@ Rocky 运行 nova-network
 
 .. code-block:: bash
 
+    # 目录及依赖
     cd /opt/ && mkdir nova && cd nova/
     git clone https://github.com/yolooks/kilo.git
 
+    # 创建Dockerfile
     vim Dockerfile
     FROM centos:centos7.9.2009
 
@@ -102,6 +104,7 @@ Rocky 运行 nova-network
     
     CMD ["/usr/bin/nova-compute"]
 
+    # 构建镜像
     docker build --network=host -t nova:1.0.0 .
 
 启动容器
