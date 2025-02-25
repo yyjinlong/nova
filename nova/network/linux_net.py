@@ -1167,6 +1167,7 @@ def restart_dhcp(context, dev, network_ref, fixedips):
         cmd.append('--server=%s' % dns_server)
 
     _execute(*cmd, run_as_root=True)
+    LOG.info('** execute command: %s success', *cmd)
 
     _add_dnsmasq_accept_rules(dev)
     LOG.info('** dnsmasq restart finish')
