@@ -51,16 +51,28 @@ nova-network
 Rocky Linux
 ===========
 
-安装 `brctl`
-------------
+1.1 安装 `brctl`
+----------------
 
 .. code-block:: bash
 
     wget https://vault.centos.org/7.9.2009/os/x86_64/Packages/bridge-utils-1.5-9.el7.x86_64.rpm
     rpm -ivh bridge-utils-1.5-9.el7.x86_64.rpm
 
-Rocky 安装 nova-network
-------------------------
+1.2 创建nova用户
+----------------
+
+.. code-block:: bash
+
+    useradd -M -u 162 nova
+    groupmod -g 162 nova
+    usermod -aG libvirt nova
+    usermod -aG docker nova
+    usermod -aG nobody nova
+    usermod -aG qemu nova
+
+1.3 安装 nova-network
+---------------------
 
 .. code-block:: bash
 
@@ -71,21 +83,22 @@ Rocky 安装 nova-network
     pip install -r requirements.txt
     python setup.py develop
 
-Rocky 启动 nova-network
------------------------
+1.4 启动 nova-network
+---------------------
 
 .. code-block:: bash
+
     mkdir /var/log/nova
     mkdir /etc/nova
     chown nova:nova /var/log/nova
     chown nova:nova /etc/nova
     tools/with_venv.sh nova-network --log-dir=/var/log/nova --log-file=nova-network.log --config-file=/etc/nova/nova.conf -v -d
 
-容器运行 nova-compute
----------------------
+1.5 容器安装 nova-compute
+-------------------------
 
-构建镜像
---------
+1.5.1 构建镜像
+--------------
 
 .. code-block:: bash
 
@@ -115,8 +128,8 @@ Rocky 启动 nova-network
     # 构建镜像
     docker build --network=host -t nova:1.0.0 .
 
-启动容器
---------
+1.6 容器启动 nova-compute
+-------------------------
 
 .. code-block:: bash
 
@@ -129,20 +142,8 @@ Rocky 启动 nova-network
     # 进入容器
     docker exec -it nova-compute bash
 
-创建nova用户
------------
-
-.. code-block:: bash
-
-    useradd -M -u 162 nova
-    groupmod -g 162 nova
-    usermod -aG libvirt nova
-    usermod -aG docker nova
-    usermod -aG nobody nova
-    usermod -aG qemu nova
-
-systemd管理
------------
+1.7 systemd管理
+---------------
 
 .. code-block:: bash
 
