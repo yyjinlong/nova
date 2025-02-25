@@ -1169,6 +1169,7 @@ def restart_dhcp(context, dev, network_ref, fixedips):
     _execute(*cmd, run_as_root=True)
 
     _add_dnsmasq_accept_rules(dev)
+    LOG.info('** dnsmasq restart finish')
 
 
 @utils.synchronized('radvd_start')
