@@ -126,7 +126,7 @@ network_opts = [
                      'fanout cast to all network hosts to update their DNS '
                      'entries in multi host mode'),
     cfg.IntOpt("dns_update_periodic_interval",
-               default=0,
+               default=-1,
                help='Number of seconds to wait between runs of updates to DNS '
                     'entries.'),
     cfg.StrOpt('dhcp_domain',
@@ -1940,7 +1940,7 @@ class VlanManager(RPCAllocateFixedIP, floating_ips.FloatingIP, NetworkManager):
         standalone service.
         """
 
-        LOG.debug('Setup network on host %s', self.host)
+        LOG.info('Setup network on host %s', self.host)
         ctxt = context.get_admin_context()
         networks = objects.NetworkList.get_by_host(ctxt, self.host)
 
@@ -1951,6 +1951,7 @@ class VlanManager(RPCAllocateFixedIP, floating_ips.FloatingIP, NetworkManager):
         self.init_host_floating_ips()
 
         self.driver.iptables_manager.defer_apply_off()
+        LOG.info('** nova-network manager init_host finished')
 
     def allocate_fixed_ip(self, context, instance_id, network, **kwargs):
         """Gets a fixed ip from the pool."""
