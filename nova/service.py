@@ -270,10 +270,13 @@ class Service(service.Service):
             LOG.info('** create manager: %s', manager)
         if report_interval is None:
             report_interval = CONF.report_interval
+        LOG.info('report_interval: %s', report_interval)
         if periodic_enable is None:
             periodic_enable = CONF.periodic_enable
+        LOG.info('periodic_enable: %s', periodic_enable)
         if periodic_fuzzy_delay is None:
             periodic_fuzzy_delay = CONF.periodic_fuzzy_delay
+        LOG.info('periodic_fuzzy_delay: %s', periodic_fuzzy_delay)
 
         debugger.init()
 
