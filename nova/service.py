@@ -189,7 +189,7 @@ class Service(service.Service):
         if self.backdoor_port is not None:
             self.manager.backdoor_port = self.backdoor_port
 
-        LOG.debug("Creating RPC server for service %s", self.topic)
+        LOG.info("Creating RPC server for service %s", self.topic)
 
         target = messaging.Target(topic=self.topic, server=self.host)
 
@@ -206,7 +206,7 @@ class Service(service.Service):
 
         self.manager.post_start_hook()
 
-        LOG.debug("Join ServiceGroup membership for this service %s",
+        LOG.info("Join ServiceGroup membership for this service %s",
                   self.topic)
         # Add service to the ServiceGroup membership group.
         self.servicegroup_api.join(self.host, self.topic, self)
@@ -262,21 +262,19 @@ class Service(service.Service):
             binary = os.path.basename(sys.argv[0])
         if not topic:
             topic = binary.rpartition('nova-')[2]
-        LOG.info('** create manager check: %s', manager)
         if not manager:
             manager_cls = ('%s_manager' %
                            binary.rpartition('nova-')[2])
             manager = CONF.get(manager_cls, None)
-            LOG.info('** create manager: %s', manager)
         if report_interval is None:
             report_interval = CONF.report_interval
-        LOG.info('report_interval: %s', report_interval)
+        LOG.info('** service create report_interval: %s', report_interval)
         if periodic_enable is None:
             periodic_enable = CONF.periodic_enable
-        LOG.info('periodic_enable: %s', periodic_enable)
+        LOG.info('** service create periodic_enable: %s', periodic_enable)
         if periodic_fuzzy_delay is None:
             periodic_fuzzy_delay = CONF.periodic_fuzzy_delay
-        LOG.info('periodic_fuzzy_delay: %s', periodic_fuzzy_delay)
+        LOG.info('** service create periodic_fuzzy_delay: %s', periodic_fuzzy_delay)
 
         debugger.init()
 

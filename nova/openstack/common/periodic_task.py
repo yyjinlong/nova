@@ -116,6 +116,7 @@ class _PeriodicTasksMeta(type):
         """
         name = task._periodic_name
 
+        LOG.info('** _PeriodicTasksMeta._add_periodic_task task: %s', task)
         if task._periodic_spacing < 0:
             LOG.info(_LI('Skipping periodic task %(task)s because '
                          'its interval is negative'),
