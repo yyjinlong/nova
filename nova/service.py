@@ -157,7 +157,6 @@ class Service(service.Service):
         self.conductor_api.wait_until_ready(context.get_admin_context())
 
     def start(self):
-        LOG.info('** start loop jinlong.....')
         verstr = version.version_string_with_package()
         LOG.info('** start loop version: %s', verstr)
         LOG.info(_LI('Starting %(topic)s node (version %(version)s)'),
@@ -172,6 +171,7 @@ class Service(service.Service):
                     ctxt, self.host, self.binary))
             self.service_id = self.service_ref['id']
         except exception.NotFound:
+            LOG.info('** service ref not found debug jinlong')
             try:
                 self.service_ref = self._create_service_ref(ctxt)
             except (exception.ServiceTopicExists,
@@ -209,12 +209,14 @@ class Service(service.Service):
         # Add service to the ServiceGroup membership group.
         self.servicegroup_api.join(self.host, self.topic, self)
 
+        LOG.info('** periodic_enable: %s', self.periodic_enable)
         if self.periodic_enable:
             if self.periodic_fuzzy_delay:
                 initial_delay = random.randint(0, self.periodic_fuzzy_delay)
             else:
                 initial_delay = None
 
+            LOG.info('** begin add dynamic timer: %s', self.periodic_tasks)
             self.tg.add_dynamic_timer(self.periodic_tasks,
                                      initial_delay=initial_delay,
                                      periodic_interval_max=
