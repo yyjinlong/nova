@@ -217,7 +217,7 @@ class PeriodicTasks(object):
                     idle_for = min(idle_for, delta)
                     continue
 
-            LOG.debug("Running periodic task %(full_task_name)s",
+            LOG.info("Running periodic task %(full_task_name)s",
                       {"full_task_name": full_task_name})
             self._periodic_last_run[task_name] = _nearest_boundary(
                 last_run, spacing)

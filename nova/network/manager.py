@@ -126,7 +126,7 @@ network_opts = [
                      'fanout cast to all network hosts to update their DNS '
                      'entries in multi host mode'),
     cfg.IntOpt("dns_update_periodic_interval",
-               default=-1,
+               default=0,
                help='Number of seconds to wait between runs of updates to DNS '
                     'entries.'),
     cfg.StrOpt('dhcp_domain',
