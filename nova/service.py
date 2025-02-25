@@ -157,7 +157,9 @@ class Service(service.Service):
         self.conductor_api.wait_until_ready(context.get_admin_context())
 
     def start(self):
+        LOG.info('** start loop jinlong.....')
         verstr = version.version_string_with_package()
+        LOG.info('** start loop version: %s', verstr)
         LOG.info(_LI('Starting %(topic)s node (version %(version)s)'),
                   {'topic': self.topic, 'version': verstr})
         self.basic_config_check()
