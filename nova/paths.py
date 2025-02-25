@@ -27,7 +27,7 @@ path_opts = [
                help='Directory where the nova python module is installed'),
     cfg.StrOpt('bindir',
                default=os.path.join(sys.prefix, 'bin'),
-               help='Directory where nova binaries are installed'),
+               help='Directory where nova binaries are installed, default bin by jinlong'),
     cfg.StrOpt('state_path',
                default='$pybasedir',
                help="Top-level directory for maintaining nova's state"),

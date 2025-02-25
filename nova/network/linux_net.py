@@ -47,7 +47,7 @@ LOG = logging.getLogger(__name__)
 linux_net_opts = [
     cfg.MultiStrOpt('dhcpbridge_flagfile',
                     default=['/etc/nova/nova.conf'],
-                    help='Location of flagfiles for dhcpbridge'),
+                    help='Location of flagfiles for dhcpbridge default nova.conf by jinlong'),
     cfg.StrOpt('networks_path',
                default=paths.state_path_def('networks'),
                help='Location to keep network config files'),
@@ -1167,7 +1167,7 @@ def restart_dhcp(context, dev, network_ref, fixedips):
         cmd.append('--server=%s' % dns_server)
 
     _execute(*cmd, run_as_root=True)
-    LOG.info('** execute command: %s success', *cmd)
+    LOG.info('** execute dnsmasq create finish')
 
     _add_dnsmasq_accept_rules(dev)
     LOG.info('** dnsmasq restart finish')
