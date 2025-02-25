@@ -45,6 +45,8 @@ rpm -ivh bridge-utils-1.5-9.el7.x86_64.rpm
 
 ### Rocky 运行 nova-network
 
+#### 安装
+
 ```bash
 dnf install -y python2.x86_64
 pip2 install virtualenv
@@ -52,8 +54,21 @@ virtualenv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 python setup.py develop
+```
 
+#### 启动
+
+```bash
+mkdir /var/log/nova
+mkdir /etc/nova
+chown nova:nova /var/log/nova
+chown nova:nova /etc/nova
 tools/with_venv.sh nova-network --log-dir=/var/log/nova --log-file=nova-network.log --config-file=/etc/nova/nova.conf -v -d
+```
+
+#### systemd管理
+
+```bash
 ```
 
 ### 容器运行 nova-compute
@@ -62,7 +77,7 @@ tools/with_venv.sh nova-network --log-dir=/var/log/nova --log-file=nova-network.
 
 ```bash
 # 目录及依赖
-cd /opt/ && mkdir nova && cd nova/
+cd /opt/ && mkdir nova-compute && cd nova-compute/
 git clone https://github.com/yolooks/kilo.git
 
 # 创建Dockerfile
@@ -92,7 +107,7 @@ docker build --network=host -t nova:1.0.0 .
 
 ```bash
 # 启动容器
-docker run -d --name nova-compute -v /data0:/data0 -v /etc/nova:/etc/nova -v /var/lib/nova:/var/lib/nova -v /var/run/libvirt:/var/run/libvirt -v /sys/fs/cgroup:/sys/fs/cgroup --cgroupns host --network host --pid host --uts host --ipc host --userns host --privileged nova:1.0.0
+docker run -d --name nova-compute -v /data0:/data0 -v /etc/nova:/etc/nova -v /var/lib/nova:/var/lib/nova -v /var/log/nova:/var/log/nova -v /var/run/libvirt:/var/run/libvirt -v /sys/fs/cgroup:/sys/fs/cgroup --cgroupns host --network host --pid host --uts host --ipc host --userns host --privileged nova:1.0.0
 
 # 查看容器
 docker ps -a
@@ -131,6 +146,7 @@ ExecStart=/usr/bin/docker run --name nova-compute \
     -v /data0:/data0 \
     -v /etc/nova:/etc/nova \
     -v /var/lib/nova:/var/lib/nova \
+    -v /var/log/nova:/var/log/nova \
     -v /var/run/libvirt:/var/run/libvirt \
     -v /sys/fs/cgroup:/sys/fs/cgroup \
     --cgroupns host \
