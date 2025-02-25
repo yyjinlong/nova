@@ -159,11 +159,13 @@ class Service(service.Service):
     def start(self):
         verstr = version.version_string_with_package()
         LOG.info('** start loop version: %s', verstr)
-        LOG.info(_LI('Starting %(topic)s node (version %(version)s)'),
+        LOG.info(_LI('** Starting %(topic)s node (version %(version)s)'),
                   {'topic': self.topic, 'version': verstr})
         self.basic_config_check()
+        LOG.info('** manager init_host')
         self.manager.init_host()
         self.model_disconnected = False
+        LOG.info('** get admin context')
         ctxt = context.get_admin_context()
         try:
             self.service_ref = (
@@ -260,10 +262,12 @@ class Service(service.Service):
             binary = os.path.basename(sys.argv[0])
         if not topic:
             topic = binary.rpartition('nova-')[2]
+        LOG.info('** create manager check: %s', manager)
         if not manager:
             manager_cls = ('%s_manager' %
                            binary.rpartition('nova-')[2])
             manager = CONF.get(manager_cls, None)
+            LOG.info('** create manager: %s', manager)
         if report_interval is None:
             report_interval = CONF.report_interval
         if periodic_enable is None:
@@ -273,6 +277,8 @@ class Service(service.Service):
 
         debugger.init()
 
+        LOG.info('** host: %s', host)
+        LOG.info('** manager: %s', manager)
         service_obj = cls(host, binary, topic, manager,
                           report_interval=report_interval,
                           periodic_enable=periodic_enable,
