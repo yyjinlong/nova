@@ -47,6 +47,16 @@ nova-network
 - 支持同一 VLAN 多网段功能。
 - `ip a show br401` 可以看到：同一 VLAN、不同网段的 DHCP IP 已经挂载到了网桥上。
 
+.. code-block:: mysql
+
+   #登录nova数据库，删除唯一索引：
+   MySQL [(none)]> use nova
+   MySQL [(none)]> show create table networks;
+   ...
+   UNIQUE KEY `uniq_networks0vlan0deleted` (`vlan`,`deleted`),
+   ...
+   MySQL [(none)]> alter table networks DROP INDEX uniq_networks0vlan0deleted;
+
 
 Rocky Linux
 ===========
@@ -59,7 +69,14 @@ Rocky Linux
     wget https://vault.centos.org/7.9.2009/os/x86_64/Packages/bridge-utils-1.5-9.el7.x86_64.rpm
     rpm -ivh bridge-utils-1.5-9.el7.x86_64.rpm
 
-1.2 创建nova用户
+1.2 安装 `dnsmasq-utils`
+----------------
+
+.. code-block:: bash
+
+    dnf install -y dnsmasq-utils.x86_64
+
+1.3 创建nova用户
 ----------------
 
 .. code-block:: bash
@@ -71,7 +88,7 @@ Rocky Linux
     usermod -aG nobody nova
     usermod -aG qemu nova
 
-1.3 安装 nova-network
+1.4 安装 nova-network
 ---------------------
 
 .. code-block:: bash
@@ -83,7 +100,7 @@ Rocky Linux
     pip install -r requirements.txt
     python setup.py develop
 
-1.4 启动 nova-network
+1.5 启动 nova-network
 ---------------------
 
 .. code-block:: bash
@@ -94,10 +111,10 @@ Rocky Linux
     chown nova:nova /etc/nova
     tools/with_venv.sh nova-network --log-dir=/var/log/nova --log-file=nova-network.log --config-file=/etc/nova/nova.conf -v -d
 
-1.5 容器安装 nova-compute
+1.6 容器安装 nova-compute
 -------------------------
 
-1.5.1 构建镜像
+1.6.1 构建镜像
 --------------
 
 .. code-block:: bash
@@ -128,7 +145,7 @@ Rocky Linux
     # 构建镜像
     docker build --network=host -t nova:1.0.0 .
 
-1.6 容器启动 nova-compute
+1.7 容器启动 nova-compute
 -------------------------
 
 .. code-block:: bash
