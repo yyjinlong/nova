@@ -81,7 +81,7 @@ Rocky Linux
 
 .. code-block:: bash
 
-    useradd -M -u 162 nova
+    useradd -m -d /var/lib/nova -u 162 nova
     groupmod -g 162 nova
     usermod -aG libvirt nova
     usermod -aG docker nova
