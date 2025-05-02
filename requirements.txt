@@ -11,7 +11,7 @@ Jinja2==2.7.2
 keystonemiddleware==1.5.1
 lxml>=2.3
 Routes==1.13
-WebOb==1.4.1
+WebOb==1.8.8
 greenlet==0.4.9
 PasteDeploy==1.5.2
 Paste==1.7.5.1
