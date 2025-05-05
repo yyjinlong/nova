@@ -7,7 +7,7 @@ SQLAlchemy<=0.9.99,>=0.9.7
 boto==2.34.0
 decorator==3.4.0
 eventlet==0.17.4
-Jinja2==2.7.2
+Jinja2==3.1.6
 keystonemiddleware==1.5.1
 lxml>=2.3
 Routes==1.13
