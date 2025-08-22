@@ -973,7 +973,7 @@ class _ComputeAPIUnitTestMixIn(object):
 
         db.block_device_mapping_get_all_by_instance(self.context,
                                                  inst.uuid,
-                                                 use_slave=False).AndReturn([])
+                                                 use_subordinate=False).AndReturn([])
         inst.save()
         self.compute_api._create_reservations(self.context,
                                               inst, inst.task_state,
@@ -1076,7 +1076,7 @@ class _ComputeAPIUnitTestMixIn(object):
         timeutils.set_time_override(delete_time)
 
         db.block_device_mapping_get_all_by_instance(
-            self.context, inst.uuid, use_slave=False).AndReturn([])
+            self.context, inst.uuid, use_subordinate=False).AndReturn([])
         inst.save().AndRaise(test.TestingException)
 
         self.mox.ReplayAll()
@@ -1954,7 +1954,7 @@ class _ComputeAPIUnitTestMixIn(object):
             image_meta['properties']['os_require_quiesce'] = 'yes'
             expect_meta['properties']['os_require_quiesce'] = 'yes'
 
-        def fake_get_all_by_instance(context, instance, use_slave=False):
+        def fake_get_all_by_instance(context, instance, use_subordinate=False):
             return copy.deepcopy(instance_bdms)
 
         def fake_image_create(context, image_meta, data=None):
